@@ -1,6 +1,9 @@
 # Deepin MCP Servers
 
+## 简介
+
 一个为 Deepin 系统设计的 MCP (Model Context Protocol) 服务器实现，提供系统工具、文件操作、网络搜索等功能。
+源自 Deepin 的 MCP 服务器实现，并进行了优化和扩展。
 
 ## 功能特性
 
@@ -57,11 +60,3 @@ src/deepin_mcp_server/
 - mcp[cli] >= 1.6.0
 - requests >= 2.30.0
 - 其他文档处理库
-
-## 许可证
-
-MIT License
-
-## 贡献
-
-欢迎提交 Issue 和 Pull Request！
