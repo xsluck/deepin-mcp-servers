@@ -54,6 +54,19 @@ from system_tools.file_operation import (
     _read_document,
     _get_files_size,
 )
+from system_tools.browser_control import (
+    _start_browser_session,
+    _close_browser_session,
+    _browser_navigate,
+    _browser_click,
+    _browser_input,
+    _browser_get_text,
+    _browser_wait_element,
+    _browser_screenshot,
+    _browser_execute_script,
+    _browser_get_page_info,
+    _browser_smart_input,
+)
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -713,6 +726,196 @@ async def send_notification(title: str, message: str, icon: str = "dialog-inform
         timeout = 30000
     
     return show_notification(title, message, icon, timeout)
+
+@mcp.tool()
+async def start_browser_session(browser_type: str = "chrome", headless: bool = False) -> str:
+    """
+    Name:
+        启动浏览器会话
+
+    Description:
+        启动一个浏览器会话，用于自动化网页操作。支持Chrome和Firefox浏览器。
+
+    Args:
+        browser_type: 浏览器类型 (chrome 或 firefox，默认chrome)
+        headless: 是否以无头模式运行 (默认False，显示浏览器窗口)
+    
+    Returns:
+        str: 操作结果
+    """
+    return _start_browser_session(browser_type, headless)
+
+@mcp.tool()
+async def close_browser_session() -> str:
+    """
+    Name:
+        关闭浏览器会话
+
+    Description:
+        关闭当前的浏览器会话，释放资源。
+
+    Returns:
+        str: 操作结果
+    """
+    return _close_browser_session()
+
+@mcp.tool()
+async def browser_navigate(url: str) -> str:
+    """
+    Name:
+        浏览器导航
+
+    Description:
+        导航到指定的网页URL。
+
+    Args:
+        url: 要访问的网页URL
+    
+    Returns:
+        str: 操作结果，包含页面标题
+    """
+    return _browser_navigate(url)
+
+@mcp.tool()
+async def browser_click(selector: str, by_type: str = "css") -> str:
+    """
+    Name:
+        点击页面元素
+
+    Description:
+        点击网页上的指定元素，如按钮、链接等。
+
+    Args:
+        selector: 元素选择器
+        by_type: 选择器类型 (css, xpath, id, class, tag，默认css)
+    
+    Returns:
+        str: 操作结果
+    """
+    return _browser_click(selector, by_type)
+
+@mcp.tool()
+async def browser_input(selector: str, text: str, by_type: str = "css") -> str:
+    """
+    Name:
+        输入文本
+
+    Description:
+        在网页的输入框中输入文本，如搜索框、表单字段等。
+
+    Args:
+        selector: 输入框选择器
+        text: 要输入的文本
+        by_type: 选择器类型 (css, xpath, id, class, tag，默认css)
+    
+    Returns:
+        str: 操作结果
+    """
+    return _browser_input(selector, text, by_type)
+
+@mcp.tool()
+async def browser_get_text(selector: str, by_type: str = "css") -> str:
+    """
+    Name:
+        获取元素文本
+
+    Description:
+        获取网页元素的文本内容。
+
+    Args:
+        selector: 元素选择器
+        by_type: 选择器类型 (css, xpath, id, class, tag，默认css)
+    
+    Returns:
+        str: 元素文本内容
+    """
+    return _browser_get_text(selector, by_type)
+
+@mcp.tool()
+async def browser_wait_element(selector: str, by_type: str = "css", timeout: int = 10) -> str:
+    """
+    Name:
+        等待元素出现
+
+    Description:
+        等待指定元素在页面上出现，常用于等待页面加载完成。
+
+    Args:
+        selector: 元素选择器
+        by_type: 选择器类型 (css, xpath, id, class, tag，默认css)
+        timeout: 超时时间，单位秒 (默认10秒)
+    
+    Returns:
+        str: 操作结果
+    """
+    return _browser_wait_element(selector, by_type, timeout)
+
+@mcp.tool()
+async def browser_screenshot(filename: str = None) -> str:
+    """
+    Name:
+        浏览器截图
+
+    Description:
+        对当前浏览器页面进行截图保存。
+
+    Args:
+        filename: 截图文件名 (可选，默认自动生成)
+    
+    Returns:
+        str: 截图文件路径
+    """
+    return _browser_screenshot(filename)
+
+@mcp.tool()
+async def browser_execute_script(script: str) -> str:
+    """
+    Name:
+        执行JavaScript脚本
+
+    Description:
+        在当前页面执行JavaScript代码，可用于复杂的页面操作。
+
+    Args:
+        script: 要执行的JavaScript代码
+    
+    Returns:
+        str: 脚本执行结果
+    """
+    return _browser_execute_script(script)
+
+@mcp.tool()
+async def browser_get_page_info() -> str:
+    """
+    Name:
+        获取页面信息
+
+    Description:
+        获取当前页面的基本信息，包括标题和URL。
+
+    Returns:
+        str: 页面信息
+    """
+    return _browser_get_page_info()
+
+@mcp.tool()
+async def browser_smart_input(selector: str, text: str, by_type: str = "css") -> str:
+    """
+    Name:
+        智能输入文本
+
+    Description:
+        智能输入文本，支持自动选择下拉建议项，适用于搜索框等有联想功能的输入框。
+
+    Args:
+        selector: 输入框选择器
+        text: 要输入的文本
+        by_type: 选择器类型 (css, xpath, id, class, tag，默认css)
+    
+    Returns:
+        str: 操作结果
+    """
+    return _browser_smart_input(selector, text, by_type)
 
 
 if __name__ == "__main__":
