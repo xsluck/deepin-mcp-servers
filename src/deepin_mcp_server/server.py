@@ -479,7 +479,7 @@ async def git_status(repository_path: str = None) -> str:
         获取Git仓库的当前状态，包括分支信息、文件更改状态等。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
     
     Returns:
         str: Git仓库状态信息
@@ -496,7 +496,7 @@ async def git_log(repository_path: str = None, max_commits: int = 10) -> str:
         获取Git仓库的提交历史记录。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
         max_commits: 最大显示提交数量 (默认10，最大50)
     
     Returns:
@@ -518,7 +518,7 @@ async def git_branch_info(repository_path: str = None) -> str:
         获取Git仓库的分支信息，包括当前分支和所有分支列表。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
     
     Returns:
         str: Git分支信息
@@ -535,7 +535,7 @@ async def git_add_files(repository_path: str = None, files: list[str] = None) ->
         将文件添加到Git暂存区。如果不指定文件，则添加所有更改的文件。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
         files: 要添加的文件列表 (可选，默认为所有更改的文件)
     
     Returns:
@@ -553,7 +553,7 @@ async def git_commit(repository_path: str = None, message: str = None) -> str:
         提交暂存区的更改到Git仓库。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
         message: 提交信息 (必需)
     
     Returns:
@@ -571,7 +571,7 @@ async def git_pull(repository_path: str = None) -> str:
         从远程仓库拉取最新的更改。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
     
     Returns:
         str: 操作结果
@@ -588,7 +588,7 @@ async def git_push(repository_path: str = None) -> str:
         将本地提交推送到远程仓库。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
     
     Returns:
         str: 操作结果
@@ -623,7 +623,7 @@ async def git_diff(repository_path: str = None, file_path: str = None, staged: b
         查看Git仓库中文件的修改差异。可以查看工作区或暂存区的差异，AI可以分析具体的代码修改内容。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
         file_path: 特定文件路径 (可选，默认查看所有文件)
         staged: 是否查看暂存区差异 (默认False，查看工作区差异)
     
@@ -642,7 +642,7 @@ async def git_show_commit(repository_path: str = None, commit_hash: str = None) 
         查看特定Git提交的详细信息和修改内容。AI可以分析提交中的具体代码更改。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
         commit_hash: 提交哈希值 (可选，默认为最新提交)
     
     Returns:
@@ -660,7 +660,7 @@ async def git_file_history(repository_path: str = None, file_path: str = None, m
         查看特定文件的Git修改历史记录。AI可以了解文件的演变过程。
 
     Args:
-        repository_path: Git仓库路径 (可选，默认为当前目录)
+        repository_path: Git仓库路径,绝对路径
         file_path: 文件路径 (必需)
         max_commits: 最大显示提交数量 (默认10，最大30)
     
