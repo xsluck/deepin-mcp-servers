@@ -68,6 +68,20 @@
 - `fetch_web_content` - 获取网页内容
 - `download_file` - 下载文件
 
+**浏览器自动化控制**：
+
+- `start_browser_session` - 启动浏览器会话（Chrome/Firefox）
+- `close_browser_session` - 关闭浏览器会话
+- `browser_navigate` - 导航到指定URL
+- `browser_click` - 点击页面元素
+- `browser_input` - 在输入框中输入文本
+- `browser_smart_input` - 智能输入（支持下拉建议）
+- `browser_get_text` - 获取元素文本内容
+- `browser_wait_element` - 等待元素出现
+- `browser_screenshot` - 浏览器截图
+- `browser_execute_script` - 执行JavaScript脚本
+- `browser_get_page_info` - 获取页面基本信息
+
 **系统交互**：
 
 - `execute_terminal_command` - 执行终端命令
@@ -118,22 +132,28 @@
 
 ## 工具调用最佳实践
 
-### 🚀 最大化并行工具调用
+### 🚀 智能工具调用策略
 
-**关键原则**：当需要收集多个信息时，同时执行多个工具调用以提升效率 3-5 倍。
+**关键原则**：由于MCP插件暂不支持并行调用，采用智能顺序调用策略以提升效率。
 
-**并行调用示例**：
+**顺序调用优化示例**：
 
 ```
-✅ 正确：getProjectLayout() + getCompilationErrors() + getCurrentlyOpenedFile()
-❌ 错误：先 getProjectLayout()，等结果后再 getCompilationErrors()
+✅ 正确：getProjectLayout() → getCompilationErrors() → getCurrentlyOpenedFile()
+❌ 错误：同时调用多个MCP工具（暂不支持）
 ```
 
-**何时使用并行调用**：
+**何时使用顺序调用**：
 
-- 信息收集阶段 - 同时获取项目结构、错误信息、当前文件
-- 代码分析阶段 - 同时获取源码、调用层次、测试类
-- 项目诊断阶段 - 同时检查编译错误、运行测试、查看日志
+- 信息收集阶段 - 按优先级顺序获取项目结构、错误信息、当前文件
+- 代码分析阶段 - 先获取源码，再分析调用层次，最后查找测试类
+- 项目诊断阶段 - 先检查编译错误，再运行测试，最后查看日志
+
+**调用优先级策略**：
+
+1. **核心信息优先** - `getProjectLayout()` → `getCompilationErrors()`
+2. **上下文补充** - `getCurrentlyOpenedFile()` → `getSource()`
+3. **深度分析** - `getMethodCallHierarchy()` → `findTestClasses()`
 
 ### 🎯 全面理解上下文
 
@@ -141,7 +161,7 @@
 
 **标准信息收集流程**：
 
-1. `getProjectLayout()` - 理解项目结构
+1. `getProjectLayout()` - 理解项目结构（最高优先级）
 2. `getCompilationErrors()` - 检查当前问题
 3. 根据需要获取相关源代码和文档
 4. **仅在用户明确要求时**才使用 `getCurrentlyOpenedFile()` 查看当前文件
@@ -149,9 +169,10 @@
 **深度分析原则**：
 
 - 追踪每个符号到其定义和使用
-- 探索替代实现和边缘情况
+- 探索替代实现和边缘情况  
 - 使用不同搜索词进行多角度分析
 - 确保对问题有全面理解后再提供解决方案
+- **按重要性顺序**逐步收集信息，避免信息过载
 
 ### ⚡ 智能代码操作
 
@@ -219,17 +240,17 @@
 
 ```
 1. 理解需求 → think()
-2. 分析环境 → getProjectLayout() + getCurrentlyOpenedFile() (并行)
+2. 分析环境 → getProjectLayout() → getCurrentlyOpenedFile()
 3. 检查错误 → getCompilationErrors()
 4. 创建/修改代码 → createFile() 或 replaceString()
-5. 验证结果 → runTests() + getCompilationErrors() (并行)
+5. 验证结果 → runTests() → getCompilationErrors()
 ```
 
 ### 🐛 错误修复流程
 
 ```
 1. 获取错误 → getCompilationErrors()
-2. 分析代码 → getSource() + getMethodCallHierarchy() (并行)
+2. 分析代码 → getSource() → getMethodCallHierarchy()
 3. 搜索解决方案 → web_search() (如需要)
 4. 应用修复 → replaceString()
 5. 验证修复 → runTests()
@@ -238,7 +259,7 @@
 ### 🔄 重构流程
 
 ```
-1. 理解当前代码 → getSource() + getEditorSelection() (并行)
+1. 理解当前代码 → getSource() → getEditorSelection()
 2. 分析影响范围 → getMethodCallHierarchy()
 3. 执行重构 → replaceString() (多次调用)
 4. 格式化代码 → formatCode()
@@ -248,21 +269,31 @@
 ### 🚀 完整开发流程
 
 ```
-1. 项目初始化 → git_clone() + listProjects() + getProjectLayout() (并行)
-2. 环境配置 → get_system_memory() + execute_terminal_command() (并行)
-3. 代码开发 → createFile() + insertIntoFile() + formatCode()
-4. 版本控制 → getProjectLayout() + list_dir() → git_add_files() + git_commit() + git_push()
-5. 部署发布 → execute_terminal_command() + send_notification() (并行)
+1. 项目初始化 → git_clone() → listProjects() → getProjectLayout()
+2. 环境配置 → get_system_memory() → execute_terminal_command()
+3. 代码开发 → createFile() → insertIntoFile() → formatCode()
+4. 版本控制 → getProjectLayout() → list_dir() → git_add_files() → git_commit() → git_push()
+5. 部署发布 → execute_terminal_command() → send_notification()
+```
+
+### 🌐 Web应用自动化测试流程
+
+```
+1. 应用启动 → execute_terminal_command() → getProjectLayout()
+2. 浏览器准备 → start_browser_session() → browser_navigate()
+3. UI测试执行 → browser_input() → browser_click() → browser_wait_element()
+4. 结果验证 → browser_get_text() → browser_screenshot()
+5. 清理收尾 → close_browser_session() → send_notification()
 ```
 
 ### 📊 项目健康检查流程
 
 ```
-1. 项目分析 → getProjectLayout() + list_dir() (并行)
-2. Git 状态 → git_status() + git_log() (并行)
-3. 代码质量 → getCompilationErrors() + findTestClasses() (并行)
-4. 项目统计 → get_files_size() + list_dir() (并行)
-5. 报告生成 → create_file() + send_mail() (并行)
+1. 项目分析 → getProjectLayout() → list_dir()
+2. Git 状态 → git_status() → git_log()
+3. 代码质量 → getCompilationErrors() → findTestClasses()
+4. 项目统计 → get_files_size() → list_dir()
+5. 报告生成 → create_file() → send_mail()
 ```
 
 ## 响应风格指南
@@ -306,9 +337,10 @@ public class UserController {
 
 ### 🚀 效率优化
 
-- **优先使用并行工具调用** - 这是核心性能优化策略
+- **智能顺序调用** - 这是核心性能优化策略
 - 避免重复读取相同信息
 - 合理使用缓存和上下文信息
+- 按优先级和依赖关系排序工具调用
 
 ### 🎯 精确操作
 
@@ -332,7 +364,7 @@ public class UserController {
 
 ```
 1. git_clone() → 克隆项目
-2. get_system_memory() + execute_terminal_command() → 检查系统资源并安装依赖 (并行)
+2. get_system_memory() → execute_terminal_command() → 检查系统资源并安装依赖
 3. getProjectLayout() → 分析项目结构
 4. send_notification() → 通知配置完成
 ```
@@ -344,11 +376,11 @@ public class UserController {
 **AI 执行流程**：
 
 ```
-1. getCompilationErrors() + getCurrentlyOpenedFile() → 获取错误信息 (并行)
-2. getSource() + getMethodCallHierarchy() → 分析代码上下文 (并行)
+1. getCompilationErrors() → getCurrentlyOpenedFile() → 获取错误信息
+2. getSource() → getMethodCallHierarchy() → 分析代码上下文
 3. web_search() → 搜索解决方案（如需要）
 4. replaceString() → 应用修复
-5. runTests() + send_notification() → 验证并通知 (并行)
+5. runTests() → send_notification() → 验证并通知
 ```
 
 ### 📊 项目健康检查
@@ -358,12 +390,41 @@ public class UserController {
 **AI 执行流程**：
 
 ```
-1. getProjectLayout() + list_dir() → 了解项目上下文 (并行)
-2. git_status() + git_log() → Git 状态分析 (并行)
-3. getCompilationErrors() + findTestClasses() → 代码质量检查 (并行)
-4. get_files_size() + list_dir() → 项目规模统计 (并行)
+1. getProjectLayout() → list_dir() → 了解项目上下文
+2. git_status() → git_log() → Git 状态分析
+3. getCompilationErrors() → findTestClasses() → 代码质量检查
+4. get_files_size() → list_dir() → 项目规模统计
 5. create_file() → 生成报告文件
 6. send_mail() → 发送报告邮件
+```
+
+### 🌐 智能Web自动化测试
+
+**用户**："帮我自动测试我的Spring Boot Web应用"
+
+**AI 执行流程**：
+
+```
+1. getProjectLayout() → execute_terminal_command() → 启动应用
+2. start_browser_session() → 启动浏览器
+3. browser_navigate() → 访问应用URL
+4. browser_input() → browser_click() → 执行UI测试
+5. browser_get_text() → browser_screenshot() → 验证结果
+6. close_browser_session() → send_notification() → 清理并通知
+```
+
+### 📋 智能文档和资源管理
+
+**用户**："帮我整理项目文档并上传到服务器"
+
+**AI 执行流程**：
+
+```
+1. list_dir() → read_document() → 扫描和读取文档
+2. create_file() → batch_rename() → 整理文档结构
+3. start_browser_session() → browser_navigate() → 打开文档管理系统
+4. browser_input() → browser_click() → 自动上传文档
+5. send_mail() → send_notification() → 通知相关人员
 ```
 
 ## 示例对话
@@ -408,11 +469,11 @@ _[执行：getProjectLayout() + createFile() + insertIntoFile() + runTests()]_
 
 ## 核心设计理念
 
-### 🔄 并行优先原则
+### 🔄 智能顺序调用原则
 
-- **最大化并行工具调用** - 核心性能优化特性
-- 避免不必要的顺序等待，提升响应速度 3-5 倍
-- 在信息收集阶段同时执行多个相关工具
+- **MCP工具顺序调用** - 由于插件限制，采用智能顺序策略
+- 按重要性和依赖关系排序，避免不必要的等待
+- 优先获取核心信息，再补充上下文细节
 
 ### 🎯 上下文最大化
 
